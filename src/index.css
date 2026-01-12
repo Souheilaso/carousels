@@ -1,96 +1,89 @@
+@import "@fontsource/inter/400.css";
+@import "@fontsource/inter/500.css";
+@import "@fontsource/inter/600.css";
+@import "@fontsource/inter/700.css";
+@import "@fontsource/instrument-serif/400.css";
+@import "@fontsource/instrument-serif/400-italic.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
-
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* Dark creative tool aesthetic */
+    --background: 240 6% 4%;
+    --foreground: 0 0% 95%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card: 240 5% 8%;
+    --card-foreground: 0 0% 95%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: 240 5% 10%;
+    --popover-foreground: 0 0% 95%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Turquoise brand accent */
+    --primary: 172 100% 45%;
+    --primary-foreground: 240 6% 4%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Gold secondary */
+    --secondary: 32 45% 55%;
+    --secondary-foreground: 240 6% 4%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    /* Silver tertiary */
+    --tertiary: 220 10% 60%;
+    --tertiary-foreground: 240 6% 4%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --muted: 240 4% 16%;
+    --muted-foreground: 240 5% 55%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    --accent: 172 100% 45%;
+    --accent-foreground: 240 6% 4%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 240 4% 18%;
+    --input: 240 4% 18%;
+    --ring: 172 100% 45%;
 
     --radius: 0.5rem;
 
-    --sidebar-background: 0 0% 98%;
+    /* Brand LUT colors */
+    --lut-turquoise: 172 100% 45%;
+    --lut-gold: 32 55% 55%;
+    --lut-silver: 220 15% 70%;
 
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    /* Sidebar */
+    --sidebar-background: 240 5% 6%;
+    --sidebar-foreground: 240 5% 65%;
+    --sidebar-primary: 172 100% 45%;
+    --sidebar-primary-foreground: 240 6% 4%;
+    --sidebar-accent: 240 4% 12%;
+    --sidebar-accent-foreground: 0 0% 95%;
+    --sidebar-border: 240 4% 14%;
+    --sidebar-ring: 172 100% 45%;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
-
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
-
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
-
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
-
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
-
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
-
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
-
+    --background: 240 6% 4%;
+    --foreground: 0 0% 95%;
+    --card: 240 5% 8%;
+    --card-foreground: 0 0% 95%;
+    --popover: 240 5% 10%;
+    --popover-foreground: 0 0% 95%;
+    --primary: 172 100% 45%;
+    --primary-foreground: 240 6% 4%;
+    --secondary: 32 45% 55%;
+    --secondary-foreground: 240 6% 4%;
+    --muted: 240 4% 16%;
+    --muted-foreground: 240 5% 55%;
+    --accent: 172 100% 45%;
+    --accent-foreground: 240 6% 4%;
     --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
-
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 4% 18%;
+    --input: 240 4% 18%;
+    --ring: 172 100% 45%;
   }
 }
 
@@ -100,6 +93,98 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Inter', sans-serif;
+  }
+}
+
+@layer components {
+  .font-display {
+    font-family: 'Instrument Serif', serif;
+  }
+
+  .font-sans {
+    font-family: 'Inter', sans-serif;
+  }
+
+  /* Panel styles */
+  .panel {
+    @apply bg-card border border-border rounded-lg;
+  }
+
+  .panel-header {
+    @apply px-4 py-3 border-b border-border text-sm font-medium text-foreground;
+  }
+
+  .panel-content {
+    @apply p-4;
+  }
+
+  /* Tool button styles */
+  .tool-btn {
+    @apply flex items-center justify-center w-10 h-10 rounded-lg transition-all duration-200;
+    @apply text-muted-foreground hover:text-foreground hover:bg-muted;
+  }
+
+  .tool-btn.active {
+    @apply bg-primary text-primary-foreground;
+  }
+
+  /* Color grade button */
+  .grade-btn {
+    @apply px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200;
+    @apply border border-border hover:border-primary/50;
+  }
+
+  .grade-btn.turquoise {
+    @apply bg-gradient-to-br from-[hsl(172,100%,45%)] to-[hsl(172,100%,25%)] text-primary-foreground;
+  }
+
+  .grade-btn.gold {
+    @apply bg-gradient-to-br from-[hsl(32,55%,55%)] to-[hsl(32,55%,35%)] text-white;
+  }
+
+  .grade-btn.silver {
+    @apply bg-gradient-to-br from-[hsl(220,15%,70%)] to-[hsl(220,15%,50%)] text-gray-900;
+  }
+
+  /* Canvas container */
+  .canvas-container {
+    @apply relative flex items-center justify-center;
+    background-image: 
+      linear-gradient(45deg, hsl(240 4% 12%) 25%, transparent 25%),
+      linear-gradient(-45deg, hsl(240 4% 12%) 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, hsl(240 4% 12%) 75%),
+      linear-gradient(-45deg, transparent 75%, hsl(240 4% 12%) 75%);
+    background-size: 20px 20px;
+    background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+  }
+
+  /* Slider styling */
+  .slider-track {
+    @apply h-1 bg-muted rounded-full;
+  }
+
+  .slider-thumb {
+    @apply w-4 h-4 bg-primary rounded-full cursor-pointer;
+  }
+
+  /* Text blend modes preview */
+  .blend-preview {
+    @apply w-full h-8 rounded flex items-center justify-center text-xs font-medium;
+  }
+}
+
+@layer utilities {
+  .text-gradient-turquoise {
+    @apply bg-gradient-to-r from-[hsl(172,100%,45%)] to-[hsl(180,80%,60%)] bg-clip-text text-transparent;
+  }
+
+  .text-gradient-gold {
+    @apply bg-gradient-to-r from-[hsl(32,55%,55%)] to-[hsl(45,70%,65%)] bg-clip-text text-transparent;
+  }
+
+  .glow-turquoise {
+    box-shadow: 0 0 20px hsl(172 100% 45% / 0.3);
   }
 }
