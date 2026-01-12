@@ -108,8 +108,8 @@ export function CarouselEditor() {
 
           {/* Right Panel */}
           {showRightPanel && (
-            <div className="w-72 bg-sidebar border-l border-border overflow-y-auto">
-              <div className="p-3 space-y-3">
+            <div className="w-72 bg-sidebar border-l border-border flex flex-col h-full">
+              <div className="flex-1 overflow-y-auto p-3 space-y-3">
                 {activeTool === 'image' && (
                   <ImageUploader onImageUpload={addImage} />
                 )}
