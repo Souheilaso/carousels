@@ -9,6 +9,7 @@ interface UseCarvasEditorProps {
 
 export function useCarvasEditor({ canvasSize }: UseCarvasEditorProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const fabricCanvasRef = useRef<FabricCanvas | null>(null);
   const [fabricCanvas, setFabricCanvas] = useState<FabricCanvas | null>(null);
   const [layers, setLayers] = useState<Layer[]>([]);
   const [selectedLayerId, setSelectedLayerId] = useState<string | null>(null);
@@ -21,6 +22,12 @@ export function useCarvasEditor({ canvasSize }: UseCarvasEditorProps) {
   useEffect(() => {
     if (!canvasRef.current) return;
 
+    // Dispose existing canvas if any
+    if (fabricCanvasRef.current) {
+      fabricCanvasRef.current.dispose();
+      fabricCanvasRef.current = null;
+    }
+
     const canvas = new FabricCanvas(canvasRef.current, {
       width: canvasSize.width,
       height: canvasSize.height,
@@ -29,23 +36,17 @@ export function useCarvasEditor({ canvasSize }: UseCarvasEditorProps) {
       preserveObjectStacking: true,
     });
 
-    canvas.setZoom(zoom);
+    fabricCanvasRef.current = canvas;
     setFabricCanvas(canvas);
 
     return () => {
-      canvas.dispose();
+      if (fabricCanvasRef.current) {
+        fabricCanvasRef.current.dispose();
+        fabricCanvasRef.current = null;
+        setFabricCanvas(null);
+      }
     };
-  }, []);
-
-  // Update canvas size
-  useEffect(() => {
-    if (!fabricCanvas) return;
-    fabricCanvas.setDimensions({
-      width: canvasSize.width,
-      height: canvasSize.height,
-    });
-    fabricCanvas.renderAll();
-  }, [fabricCanvas, canvasSize]);
+  }, [canvasSize.width, canvasSize.height]);
 
   // Add image to canvas
   const addImage = useCallback(async (imageUrl: string) => {
