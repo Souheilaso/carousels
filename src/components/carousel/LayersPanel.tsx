@@ -1,4 +1,4 @@
-import { Eye, EyeOff, Lock, Unlock, Trash2, GripVertical, Image, Type } from 'lucide-react';
+import { Eye, EyeOff, Lock, Unlock, Trash2, GripVertical, Image, Type, Clapperboard } from 'lucide-react';
 import { Layer } from '@/types/carousel';
 import { cn } from '@/lib/utils';
 
@@ -43,11 +43,9 @@ export function LayersPanel({
               >
                 <GripVertical className="w-4 h-4 text-muted-foreground cursor-grab" />
                 
-                {layer.type === 'image' ? (
-                  <Image className="w-4 h-4 text-muted-foreground" />
-                ) : (
-                  <Type className="w-4 h-4 text-muted-foreground" />
-                )}
+                {layer.type === 'image' && <Image className="w-4 h-4 text-muted-foreground" />}
+                {layer.type === 'video' && <Clapperboard className="w-4 h-4 text-muted-foreground" />}
+                {layer.type === 'text' && <Type className="w-4 h-4 text-muted-foreground" />}
                 
                 <span className={cn(
                   'flex-1 text-sm truncate',

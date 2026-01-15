@@ -10,6 +10,19 @@ export type BlendMode = 'normal' | 'multiply' | 'screen' | 'overlay' | 'soft-lig
 
 export type FontFamily = 'Inter' | 'Instrument Serif';
 
+export type TextEffect = {
+  stroke?: {
+    width: number;
+    color: string;
+  };
+  shadow?: {
+    offsetX: number;
+    offsetY: number;
+    blur: number;
+    color: string;
+  };
+};
+
 export type TextStyle = {
   fontFamily: FontFamily;
   fontSize: number;
@@ -19,14 +32,34 @@ export type TextStyle = {
   blendMode: BlendMode;
   letterSpacing: number;
   lineHeight: number;
+  effects?: TextEffect;
 };
 
 export type Layer = {
   id: string;
-  type: 'image' | 'text';
+  type: 'image' | 'video' | 'text';
   name: string;
   visible: boolean;
   locked: boolean;
+  lutPreset?: LutPreset | null;
+  lutIntensity?: number;
+};
+
+export type CarouselSlide = {
+  id: string;
+  name: string;
+  canvasSize: CanvasSize;
+  layers: Layer[];
+  createdAt: number;
+  updatedAt: number;
+};
+
+export type CarouselProject = {
+  id: string;
+  name: string;
+  slides: CarouselSlide[];
+  createdAt: number;
+  updatedAt: number;
 };
 
 export const CAROUSEL_SIZES: CanvasSize[] = [

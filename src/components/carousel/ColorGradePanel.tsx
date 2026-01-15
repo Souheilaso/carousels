@@ -5,27 +5,36 @@ import { Slider } from '@/components/ui/slider';
 interface ColorGradePanelProps {
   activeLut: LutPreset | null;
   intensity: number;
-  onLutChange: (lut: LutPreset) => void;
-  onIntensityChange: (intensity: number) => void;
+  selectedLayerId?: string | null;
+  onLutChange: (lut: LutPreset, layerId?: string) => void;
+  onIntensityChange: (intensity: number, layerId?: string) => void;
 }
 
 export function ColorGradePanel({ 
   activeLut, 
   intensity, 
+  selectedLayerId,
   onLutChange, 
   onIntensityChange 
 }: ColorGradePanelProps) {
+  const applyToSelected = !!selectedLayerId;
+
   return (
     <div className="panel">
       <div className="panel-header">Color Grade</div>
       <div className="panel-content space-y-4">
+        {applyToSelected && (
+          <div className="text-xs text-muted-foreground bg-muted/50 p-2 rounded">
+            Applying to selected image layer
+          </div>
+        )}
         <div className="space-y-2">
           <p className="text-xs text-muted-foreground uppercase tracking-wider">Brand Presets</p>
           <div className="grid grid-cols-1 gap-2">
             {(Object.keys(LUT_PRESETS) as LutPreset[]).map((lut) => (
               <button
                 key={lut}
-                onClick={() => onLutChange(lut)}
+                onClick={() => onLutChange(lut, applyToSelected ? selectedLayerId || undefined : undefined)}
                 className={cn(
                   'grade-btn text-left',
                   lut,
@@ -47,7 +56,7 @@ export function ColorGradePanel({
             </div>
             <Slider
               value={[intensity]}
-              onValueChange={(values) => onIntensityChange(values[0])}
+              onValueChange={(values) => onIntensityChange(values[0], applyToSelected ? selectedLayerId || undefined : undefined)}
               min={0}
               max={100}
               step={1}
