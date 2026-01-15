@@ -52,6 +52,12 @@
     --lut-turquoise: 172 100% 45%;
     --lut-gold: 32 55% 55%;
     --lut-silver: 220 15% 70%;
+    --lut-cinematic: 200 45% 55%;
+    --lut-matte: 30 10% 70%;
+    --lut-vibrant: 330 80% 60%;
+    --lut-noir: 220 8% 35%;
+    --lut-pastel: 300 40% 72%;
+    --lut-sunset: 18 85% 58%;
 
     /* Sidebar */
     --sidebar-background: 240 5% 6%;
@@ -136,17 +142,6 @@
     @apply border border-border hover:border-primary/50;
   }
 
-  .grade-btn.turquoise {
-    @apply bg-gradient-to-br from-[hsl(172,100%,45%)] to-[hsl(172,100%,25%)] text-primary-foreground;
-  }
-
-  .grade-btn.gold {
-    @apply bg-gradient-to-br from-[hsl(32,55%,55%)] to-[hsl(32,55%,35%)] text-white;
-  }
-
-  .grade-btn.silver {
-    @apply bg-gradient-to-br from-[hsl(220,15%,70%)] to-[hsl(220,15%,50%)] text-gray-900;
-  }
 
   /* Canvas container */
   .canvas-container {

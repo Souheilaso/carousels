@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import type React from 'react';
 import { CAROUSEL_SIZES, CanvasSize, LutPreset } from '@/types/carousel';
 import { useCanvasEditor } from '@/hooks/useCanvasEditor';
@@ -17,7 +17,7 @@ import { Layers, Download, Grid3x3, Square } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { toast } from 'sonner';
 import JSZip from 'jszip';
-import { Toggle } from '@/components/ui/toggle';
+import { cn } from '@/lib/utils';
 
 export function CarouselEditor() {
   const [activeTool, setActiveTool] = useState('select');
@@ -52,7 +52,17 @@ export function CarouselEditor() {
     addText,
     updateTextLayer,
     getSelectedTextProperties,
+    getSelectedLayerColorGrade,
     applyColorGrade,
+    resetColorGrade,
+    applyManualAdjustment,
+    applyColorWheel,
+    applyCurves,
+    applyPrimaryAdjustments,
+    applyPrimaryBars,
+    applyAdvancedCurves,
+    applyHSL,
+    applyAdvancedAdjustments,
     selectLayer,
     toggleLayerVisibility,
     toggleLayerLock,
@@ -95,14 +105,69 @@ export function CarouselEditor() {
     setActiveTool(tool);
   };
 
+  // Get selected layer's color grade state
+  const selectedLayerColorGrade = selectedLayerId ? getSelectedLayerColorGrade() : null;
+  const previewImageUrl = useMemo(() => {
+    if (selectedLayerId) {
+      const selectedLayer = layers.find(layer => layer.id === selectedLayerId);
+      if (selectedLayer?.type === 'image' && selectedLayer.sourceUrl) {
+        return selectedLayer.sourceUrl;
+      }
+    }
+    const firstImageLayer = layers.find(layer => layer.type === 'image' && layer.sourceUrl);
+    return firstImageLayer?.sourceUrl ?? null;
+  }, [layers, selectedLayerId]);
+
   const handleLutChange = (lut: LutPreset, layerId?: string) => {
-    applyColorGrade(lut, lutIntensity, layerId);
+    const intensity = layerId && selectedLayerColorGrade 
+      ? selectedLayerColorGrade.intensity 
+      : lutIntensity;
+    applyColorGrade(lut, intensity, layerId);
   };
 
   const handleIntensityChange = (intensity: number, layerId?: string) => {
-    if (activeLut) {
-      applyColorGrade(activeLut, intensity, layerId);
+    const lut = layerId && selectedLayerColorGrade 
+      ? selectedLayerColorGrade.lut 
+      : activeLut;
+    if (lut) {
+      applyColorGrade(lut, intensity, layerId);
     }
+  };
+
+  const handleManualAdjustmentChange = (adjustment: 'exposure' | 'contrast' | 'saturation' | 'temperature', value: number, layerId?: string) => {
+    applyManualAdjustment(adjustment, value, layerId);
+  };
+
+  const handleColorWheelChange = (wheel: 'lift' | 'gamma' | 'gain' | 'offset', value: { r: number; g: number; b: number }, layerId?: string) => {
+    applyColorWheel(wheel, value, layerId);
+  };
+
+  const handlePrimaryAdjustmentsChange = (adjustments: any, layerId?: string) => {
+    applyPrimaryAdjustments(adjustments, layerId);
+  };
+
+  const handlePrimaryBarsChange = (bars: any, layerId?: string) => {
+    applyPrimaryBars(bars, layerId);
+  };
+
+  const handleCurvesChange = (curves: any, layerId?: string) => {
+    applyCurves(curves, layerId);
+  };
+
+  const handleAdvancedCurvesChange = (curves: any, layerId?: string) => {
+    applyAdvancedCurves(curves, layerId);
+  };
+
+  const handleHSLChange = (hsl: any, layerId?: string) => {
+    applyHSL(hsl, layerId);
+  };
+
+  const handleAdvancedChange = (advanced: any, layerId?: string) => {
+    applyAdvancedAdjustments(advanced, layerId);
+  };
+
+  const handleResetColorGrade = (layerId?: string) => {
+    resetColorGrade(layerId);
   };
 
   const handleExport = useCallback(async () => {
@@ -255,25 +320,37 @@ export function CarouselEditor() {
           </div>
           <div className="flex items-center gap-2">
             {/* View Mode Toggle */}
-            <div className="flex items-center gap-1 bg-muted rounded-md p-1">
-              <Toggle
-                pressed={viewMode === 'single'}
-                onPressedChange={(pressed) => pressed && setViewMode('single')}
-                size="sm"
-                className="data-[state=on]:bg-background data-[state=on]:text-foreground"
+            <div
+              role="radiogroup"
+              aria-label="View mode"
+              className="bg-muted rounded-md p-1 flex items-center gap-1"
+            >
+              <button
+                type="button"
+                role="radio"
+                aria-checked={viewMode === 'single'}
+                onClick={() => setViewMode('single')}
+                className={cn(
+                  'inline-flex h-9 w-9 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted/70 hover:text-foreground',
+                  viewMode === 'single' && 'bg-background text-foreground shadow-sm'
+                )}
                 aria-label="Single slide view"
               >
                 <Square className="w-4 h-4" />
-              </Toggle>
-              <Toggle
-                pressed={viewMode === 'full'}
-                onPressedChange={(pressed) => pressed && setViewMode('full')}
-                size="sm"
-                className="data-[state=on]:bg-background data-[state=on]:text-foreground"
+              </button>
+              <button
+                type="button"
+                role="radio"
+                aria-checked={viewMode === 'full'}
+                onClick={() => setViewMode('full')}
+                className={cn(
+                  'inline-flex h-9 w-9 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted/70 hover:text-foreground',
+                  viewMode === 'full' && 'bg-background text-foreground shadow-sm'
+                )}
                 aria-label="Full view"
               >
                 <Grid3x3 className="w-4 h-4" />
-              </Toggle>
+              </button>
             </div>
             {viewMode === 'single' && (
               <>
@@ -349,13 +426,66 @@ export function CarouselEditor() {
 
                     {activeTool === 'grade' && (
                       <ColorGradePanel
-                        activeLut={activeLut}
-                        intensity={lutIntensity}
+                        activeLut={selectedLayerId 
+                          ? (selectedLayerColorGrade?.lut ?? activeLut)
+                          : activeLut}
+                        intensity={selectedLayerId
+                          ? (selectedLayerColorGrade?.intensity ?? lutIntensity)
+                          : lutIntensity}
                         selectedLayerId={selectedLayerId}
+                        previewImageUrl={previewImageUrl}
+                        onResetColorGrade={handleResetColorGrade}
+                        manualAdjustments={selectedLayerColorGrade?.manualAdjustments}
+                        colorWheels={selectedLayerColorGrade?.advancedColorGrade?.colorWheels}
+                        primaryAdjustments={selectedLayerColorGrade?.advancedColorGrade?.primaryAdjustments}
+                        primaryBars={selectedLayerColorGrade?.advancedColorGrade?.primaryBars}
+                        curves={selectedLayerColorGrade?.advancedColorGrade?.curves}
+                        advancedCurves={selectedLayerColorGrade?.advancedColorGrade?.advancedCurves}
+                        hslAdjustments={selectedLayerColorGrade?.advancedColorGrade?.hslAdjustments}
+                        advancedAdjustments={selectedLayerColorGrade?.advancedColorGrade?.advancedAdjustments}
                         onLutChange={handleLutChange}
                         onIntensityChange={handleIntensityChange}
+                        onManualAdjustmentChange={handleManualAdjustmentChange}
+                        onColorWheelChange={handleColorWheelChange}
+                        onPrimaryAdjustmentsChange={handlePrimaryAdjustmentsChange}
+                        onPrimaryBarsChange={handlePrimaryBarsChange}
+                        onCurvesChange={handleCurvesChange}
+                        onAdvancedCurvesChange={handleAdvancedCurvesChange}
+                        onHSLChange={handleHSLChange}
+                        onAdvancedChange={handleAdvancedChange}
                       />
                     )}
+                {activeTool === 'grade' && (
+                  <ColorGradePanel
+                    activeLut={selectedLayerId 
+                      ? (selectedLayerColorGrade?.lut ?? activeLut)
+                      : activeLut}
+                    intensity={selectedLayerId
+                      ? (selectedLayerColorGrade?.intensity ?? lutIntensity)
+                      : lutIntensity}
+                    selectedLayerId={selectedLayerId}
+                    previewImageUrl={previewImageUrl}
+                    onResetColorGrade={handleResetColorGrade}
+                    manualAdjustments={selectedLayerColorGrade?.manualAdjustments}
+                    colorWheels={selectedLayerColorGrade?.advancedColorGrade?.colorWheels}
+                    primaryAdjustments={selectedLayerColorGrade?.advancedColorGrade?.primaryAdjustments}
+                    primaryBars={selectedLayerColorGrade?.advancedColorGrade?.primaryBars}
+                    curves={selectedLayerColorGrade?.advancedColorGrade?.curves}
+                    advancedCurves={selectedLayerColorGrade?.advancedColorGrade?.advancedCurves}
+                    hslAdjustments={selectedLayerColorGrade?.advancedColorGrade?.hslAdjustments}
+                    advancedAdjustments={selectedLayerColorGrade?.advancedColorGrade?.advancedAdjustments}
+                    onLutChange={handleLutChange}
+                    onIntensityChange={handleIntensityChange}
+                    onManualAdjustmentChange={handleManualAdjustmentChange}
+                    onColorWheelChange={handleColorWheelChange}
+                    onPrimaryAdjustmentsChange={handlePrimaryAdjustmentsChange}
+                    onPrimaryBarsChange={handlePrimaryBarsChange}
+                    onCurvesChange={handleCurvesChange}
+                    onAdvancedCurvesChange={handleAdvancedCurvesChange}
+                    onHSLChange={handleHSLChange}
+                    onAdvancedChange={handleAdvancedChange}
+                  />
+                )}
 
                     {activeTool === 'removebg' && (
                       <BackgroundRemovalPanel
@@ -476,11 +606,33 @@ export function CarouselEditor() {
 
                 {activeTool === 'grade' && (
                   <ColorGradePanel
-                    activeLut={activeLut}
-                    intensity={lutIntensity}
+                    activeLut={selectedLayerId 
+                      ? (selectedLayerColorGrade?.lut ?? activeLut)
+                      : activeLut}
+                    intensity={selectedLayerId
+                      ? (selectedLayerColorGrade?.intensity ?? lutIntensity)
+                      : lutIntensity}
                     selectedLayerId={selectedLayerId}
+                    previewImageUrl={previewImageUrl}
+                    onResetColorGrade={handleResetColorGrade}
+                    manualAdjustments={selectedLayerColorGrade?.manualAdjustments}
+                    colorWheels={selectedLayerColorGrade?.advancedColorGrade?.colorWheels}
+                    primaryAdjustments={selectedLayerColorGrade?.advancedColorGrade?.primaryAdjustments}
+                    primaryBars={selectedLayerColorGrade?.advancedColorGrade?.primaryBars}
+                    curves={selectedLayerColorGrade?.advancedColorGrade?.curves}
+                    advancedCurves={selectedLayerColorGrade?.advancedColorGrade?.advancedCurves}
+                    hslAdjustments={selectedLayerColorGrade?.advancedColorGrade?.hslAdjustments}
+                    advancedAdjustments={selectedLayerColorGrade?.advancedColorGrade?.advancedAdjustments}
                     onLutChange={handleLutChange}
                     onIntensityChange={handleIntensityChange}
+                    onManualAdjustmentChange={handleManualAdjustmentChange}
+                    onColorWheelChange={handleColorWheelChange}
+                    onPrimaryAdjustmentsChange={handlePrimaryAdjustmentsChange}
+                    onPrimaryBarsChange={handlePrimaryBarsChange}
+                    onCurvesChange={handleCurvesChange}
+                    onAdvancedCurvesChange={handleAdvancedCurvesChange}
+                    onHSLChange={handleHSLChange}
+                    onAdvancedChange={handleAdvancedChange}
                   />
                 )}
 
